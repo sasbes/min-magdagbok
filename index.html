@@ -76,9 +76,10 @@ input[type=range]{width:100%;accent-color:var(--green)}textarea{min-height:90px;
 </main>
 <script>
 const KEY='minMagdagbokRecordsV1';
-let records=JSON.parse(localStorage.getItem(KEY)||'[]'), currentPast=false, selectedBristol='', selectedAmount='Lagom', selectedSymptoms=new Set(), selectedDate=today(), monthCursor=new Date();
-const $=id=>document.getElementById(id), today=()=>new Date().toISOString().slice(0,10);
-const symptoms=['Magont','Kramper','Uppblåsthet','Gasig','Illamående','Slem','Trängningar','Ofullständig tömning','Förstoppning','Diarré','Smärta vid tömning','Tarmljud','Tarmrörelse'];
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+
+let records=JSON.parse(localStorage.getItem(KEY)||'[]'), currentPast=false, selectedBristol='', selectedAmount='Lagom', selectedSymptoms=new Set(), selectedDate=today(), monthCursor=new Date();const symptoms=['Magont','Kramper','Uppblåsthet','Gasig','Illamående','Slem','Trängningar','Ofullständig tömning','Förstoppning','Diarré','Smärta vid tömning','Tarmljud','Tarmrörelse'];
 const bristolDesc=['Hårda separata kulor','Klumpig korvform','Korv med sprickor','Slät och mjuk korv','Mjuka tydliga klumpar','Mosig med ojämna kanter','Helt vattnig'];
 function persist(){localStorage.setItem(KEY,JSON.stringify(records))}
 function show(tab){document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));$(tab).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>{b.className=b.dataset.tab===tab?'active':'secondary'});if(tab==='calendar')renderCalendar();if(tab==='stats')renderStats();if(tab==='home')renderRecent()}
