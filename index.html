@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#477b59">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Min magdagbok</title>
+<style>
+:root{--green:#477b59;--green-dark:#315a43;--pale:#eaf2eb;--bg:#f7f8f6;--ink:#243229;--muted:#68756c;--line:#dce4dd;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,-apple-system,Segoe UI,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{padding:22px 18px 12px;display:flex;justify-content:space-between;align-items:center}h1{font-size:23px;margin:0}h2{font-size:20px;margin:8px 0}h3{font-size:16px;margin:18px 0 8px}.wrap{max-width:620px;margin:auto;padding:0 14px 30px}
+nav{display:flex;gap:7px;margin:8px 0 16px}nav button{flex:1;padding:11px 5px;font-size:14px}
+button,.btn{border:0;border-radius:13px;padding:13px 15px;background:var(--green);color:white;font-weight:650;font-size:15px;cursor:pointer}
+button.secondary{background:white;color:var(--green-dark);border:1px solid var(--line)}button.active{background:var(--green-dark);color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}
+.panel{background:white;border:1px solid var(--line);border-radius:19px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #1b3b2110}
+.hero{background:var(--pale);border:0;text-align:center;padding:22px}.hero h2{color:var(--green-dark);font-size:25px}.hero button{width:100%;padding:19px;font-size:18px;margin:7px 0}.hero .secondary{font-size:15px;padding:13px}
+.small{font-size:13px;color:var(--muted)}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.choice{background:#fff;color:var(--ink);border:1px solid var(--line);text-align:left;padding:12px;font-weight:500}.choice.selected{background:var(--pale);border:2px solid var(--green);padding:11px}
+.choice b{display:block;color:var(--green-dark);margin-bottom:3px}.choice span{font-size:13px;color:var(--muted)}
+.segment{display:flex;gap:6px}.segment button{flex:1}.checkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.check{display:flex;align-items:center;gap:9px;padding:11px;border:1px solid var(--line);border-radius:12px;background:white;cursor:pointer;font-size:14px}
+.check input{accent-color:var(--green);width:18px;height:18px}.check.on{border-color:var(--green);background:var(--pale)}
+label{display:block;font-weight:650;margin:15px 0 7px}input[type=date],textarea,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;font:inherit;background:white;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--green)}textarea{min-height:90px;resize:vertical}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.row>*{min-width:0}
+.entry{border:1px solid var(--line);border-radius:13px;padding:12px;margin:8px 0;background:white}.entry strong{font-size:15px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px}.kpi{background:var(--pale);padding:14px;border-radius:14px}.kpi b{font-size:25px;display:block;color:var(--green-dark)}
+.barrow{display:grid;grid-template-columns:64px 1fr 28px;gap:8px;align-items:center;margin:9px 0;font-size:13px}.bar{height:12px;background:#edf1ed;border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;background:var(--green);border-radius:20px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}.day{padding:10px 0;border-radius:10px;background:white;border:1px solid transparent;font-size:14px;color:var(--ink)}.day.has{border-color:#9cbea4;background:var(--pale)}.day.sel{background:var(--green);color:white}.day.blank{visibility:hidden}
+.hidden{display:none!important}.notice{padding:11px;border-radius:12px;background:#fff7df;color:#67511b;font-size:13px}.footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media(min-width:520px){.checkgrid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>Min magdagbok</h1><span aria-hidden="true">🌿</span></header>
+<main class="wrap">
+<nav>
+<button data-tab="home" class="active">Hem</button><button data-tab="calendar" class="secondary">Kalender</button><button data-tab="stats" class="secondary">Statistik</button>
+</nav>
+<section id="home" class="view">
+<div class="panel hero"><h2>Hur mår magen?</h2><p class="small">Registrera ett toalettbesök på några sekunder.</p>
+<button id="nowBtn">Sitter på toa nu</button><button id="pastBtn" class="secondary">Satt på toa tidigare</button></div>
+<h3>Senaste besök</h3><div id="recent"></div>
+<div class="panel"><h3>Säkerhetskopia</h3><p class="small">Dina uppgifter sparas på den här enheten. Exportera en säkerhetskopia regelbundet.</p>
+<div class="row"><button class="secondary" id="exportBtn">Exportera data</button><button class="secondary" id="importBtn">Importera data</button></div><input id="importFile" type="file" accept="application/json" class="hidden"></div>
+</section>
+<section id="form" class="view hidden">
+<div class="row"><h2>Registrera besök</h2><button class="secondary" id="cancelBtn">Avbryt</button></div>
+<p class="small" id="visitKind">Pågående besök</p>
+<label>Datum</label><input type="date" id="visitDate">
+<label>1. Bristol stool scale</label><p class="small">Välj den typ som bäst beskriver avföringen.</p>
+<div class="grid" id="bristol"></div>
+<label>2. Mängd</label><div class="segment" id="amount">
+<button class="secondary" data-value="Lite">Lite</button><button data-value="Lagom" class="active">Lagom</button><button class="secondary" data-value="Mycket">Mycket</button></div>
+<label>3. Symptom</label><p class="small">Valda symptom markeras med grön bakgrund och bock.</p><div class="checkgrid" id="symptoms"></div>
+<label>4. Blod</label><label class="check"><input type="checkbox" id="blood"> Blod förekommer</label>
+<label>5. Smärta: <span id="painLabel">0</span>/10</label><input id="pain" type="range" min="0" max="10" value="0">
+<label>6. Hur bråttom var det?</label><select id="urgency"><option>Normalt</option><option>Lite bråttom</option><option>Mycket bråttom</option><option>Akut</option></select>
+<label>7. Övrig information</label><textarea id="notes" placeholder="Exempelvis färg, mat, mediciner eller annat..."></textarea>
+<button id="saveBtn" style="width:100%;margin-top:16px">Spara besök</button>
+</section>
+<section id="calendar" class="view hidden">
+<h2>Kalender</h2><div class="panel"><div class="row"><button class="secondary" id="prevMonth">‹</button><strong id="monthLabel"></strong><button class="secondary" id="nextMonth">›</button></div>
+<div class="calendar small" style="margin-top:14px"><span>Mån</span><span>Tis</span><span>Ons</span><span>Tor</span><span>Fre</span><span>Lör</span><span>Sön</span></div><div class="calendar" id="calendarGrid"></div></div>
+<h3 id="selectedLabel">Besök</h3><div id="dayEntries"></div>
+</section>
+<section id="stats" class="view hidden">
+<h2>Statistik</h2><div class="kpis"><div class="kpi"><b id="totalCount">0</b><span class="small">Toalettbesök</span></div><div class="kpi"><b id="avgPain">0</b><span class="small">Genomsnittlig smärta</span></div></div>
+<div class="panel"><h3>Bristol-typer</h3><div id="bristolStats"></div></div>
+<div class="panel"><h3>Vanligaste symptom</h3><div id="symptomStats"></div></div>
+<div class="panel"><h3>Övrigt</h3><p id="bloodStats" class="small"></p></div>
+</section>
+<p class="footer">Min magdagbok · Uppgifterna sparas lokalt på enheten</p>
+</main>
+<script>
+const KEY='minMagdagbokRecordsV1';
+let records=JSON.parse(localStorage.getItem(KEY)||'[]'), currentPast=false, selectedBristol='', selectedAmount='Lagom', selectedSymptoms=new Set(), selectedDate=today(), monthCursor=new Date();
+const $=id=>document.getElementById(id), today=()=>new Date().toISOString().slice(0,10);
+const symptoms=['Magont','Kramper','Uppblåsthet','Gasig','Illamående','Slem','Trängningar','Ofullständig tömning','Förstoppning','Diarré','Smärta vid tömning','Tarmljud','Tarmrörelse'];
+const bristolDesc=['Hårda separata kulor','Klumpig korvform','Korv med sprickor','Slät och mjuk korv','Mjuka tydliga klumpar','Mosig med ojämna kanter','Helt vattnig'];
+function persist(){localStorage.setItem(KEY,JSON.stringify(records))}
+function show(tab){document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));$(tab).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>{b.className=b.dataset.tab===tab?'active':'secondary'});if(tab==='calendar')renderCalendar();if(tab==='stats')renderStats();if(tab==='home')renderRecent()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+function start(past){currentPast=past;selectedBristol='';selectedAmount='Lagom';selectedSymptoms.clear();$('visitDate').value=today();$('visitKind').textContent=past?'Tidigare toalettbesök':'Pågående besök';$('blood').checked=false;$('pain').value=0;$('painLabel').textContent='0';$('urgency').value='Normalt';$('notes').value='';renderBristol();renderSymptoms();renderAmount();show('form')}
+$('nowBtn').onclick=()=>start(false);$('pastBtn').onclick=()=>start(true);$('cancelBtn').onclick=()=>show('home');
+function renderBristol(){$('bristol').innerHTML=bristolDesc.map((d,i)=>`<button class="choice ${selectedBristol===String(i+1)?'selected':''}" data-b="${i+1}"><b>Typ ${i+1}</b><span>${d}</span></button>`).join('');$('bristol').querySelectorAll('button').forEach(b=>b.onclick=()=>{selectedBristol=b.dataset.b;renderBristol()})}
+function renderAmount(){document.querySelectorAll('#amount button').forEach(b=>{b.className=b.dataset.value===selectedAmount?'active':'secondary';b.onclick=()=>{selectedAmount=b.dataset.value;renderAmount()}})}
+function renderSymptoms(){$('symptoms').innerHTML=symptoms.map(s=>`<label class="check ${selectedSymptoms.has(s)?'on':''}"><input type="checkbox" ${selectedSymptoms.has(s)?'checked':''} data-s="${s}"><span>${selectedSymptoms.has(s)?'✓ ':''}${s}</span></label>`).join('');$('symptoms').querySelectorAll('input').forEach(c=>c.onchange=()=>{c.checked?selectedSymptoms.add(c.dataset.s):selectedSymptoms.delete(c.dataset.s);renderSymptoms()})}
+$('pain').oninput=()=> $('painLabel').textContent=$('pain').value;
+$('saveBtn').onclick=()=>{if(!selectedBristol){alert('Välj en Bristol-typ först.');return}records.unshift({id:Date.now(),date:$('visitDate').value||today(),time:new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}),past:currentPast,bristol:selectedBristol,amount:selectedAmount,symptoms:[...selectedSymptoms],blood:$('blood').checked,pain:Number($('pain').value),urgency:$('urgency').value,notes:$('notes').value});persist();show('home')};
+function renderRecent(){ $('recent').innerHTML=records.slice(0,5).map(r=>entryHTML(r)).join('')||'<p class="small">Inga registreringar ännu.</p>'}
+function entryHTML(r){return `<div class="entry"><div class="row"><strong>${r.time} · ${r.past?'Tidigare besök':'Toalettbesök'}</strong><span class="small">Bristol ${r.bristol}</span></div><p class="small">${r.amount} · Smärta ${r.pain}/10 · Blod: ${r.blood?'Ja':'Nej'}</p><p class="small">${r.symptoms.join(', ')||'Inga symptom angivna'}</p>${r.notes?`<p class="small">${escapeHTML(r.notes)}</p>`:''}</div>`}
+function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderCalendar(){let y=monthCursor.getFullYear(),m=monthCursor.getMonth();$('monthLabel').textContent=new Intl.DateTimeFormat('sv-SE',{month:'long',year:'numeric'}).format(monthCursor);let first=new Date(y,m,1),offset=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate();let html='';for(let i=0;i<offset;i++)html+='<span class="day blank"></span>';for(let d=1;d<=days;d++){let ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,has=records.some(r=>r.date===ds);html+=`<button class="day ${has?'has':''} ${selectedDate===ds?'sel':''}" data-date="${ds}">${d}${has?' •':''}</button>`}$('calendarGrid').innerHTML=html;$('calendarGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>{selectedDate=b.dataset.date;renderCalendar()});$('selectedLabel').textContent='Besök '+selectedDate;let day=records.filter(r=>r.date===selectedDate);$('dayEntries').innerHTML=day.map(entryHTML).join('')||'<p class="small">Inga registreringar denna dag.</p>'}
+$('prevMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()-1);renderCalendar()};$('nextMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()+1);renderCalendar()};
+function bar(label,n,max){return `<div class="barrow"><span>${label}</span><div class="bar"><i style="width:${max?100*n/max:0}%"></i></div><b>${n}</b></div>`}
+function renderStats(){ $('totalCount').textContent=records.length;$('avgPain').textContent=records.length?(records.reduce((a,r)=>a+r.pain,0)/records.length).toFixed(1):'0';let bc=bristolDesc.map((d,i)=>records.filter(r=>r.bristol===String(i+1)).length),max=Math.max(1,...bc);$('bristolStats').innerHTML=bc.map((n,i)=>bar('Typ '+(i+1),n,max)).join('');let sc=symptoms.map(s=>[s,records.filter(r=>r.symptoms.includes(s)).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);let sm=Math.max(1,...sc.map(x=>x[1]));$('symptomStats').innerHTML=sc.length?sc.map(x=>bar(x[0],x[1],sm)).join(''):'<p class="small">Symptomstatistik visas när du har registrerat symptom.</p>';$('bloodStats').textContent=`Blod markerat vid ${records.filter(r=>r.blood).length} av ${records.length} besök.`}
+$('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify({app:'Min magdagbok',version:1,records},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='min-magdagbok-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.records))throw Error();if(confirm('Importera och ersätta nuvarande dagbok?')){records=data.records;persist();show('home')}}catch{alert('Filen kunde inte läsas. Välj en giltig säkerhetskopia.')}e.target.value=''};
+renderRecent();renderBristol();renderSymptoms();renderAmount();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
